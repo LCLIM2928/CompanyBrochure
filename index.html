@@ -108,12 +108,17 @@
     button:hover { background: #2563eb; }
     button.secondary { background: #475569; }
     button.secondary:hover { background: #334155; }
+    button.music-on { background: #10b981; }
+    button.music-on:hover { background: #059669; }
     #status { font-size: 15px; color: #cbd5e1; margin-top: 20px; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
 </head>
 <body>
+
+  <!-- Background Audio Element -->
+  <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
 
   <div id="status">Loading high-resolution brochure...</div>
 
@@ -131,6 +136,7 @@
     <button id="zoomOutBtn" class="secondary">− Zoom</button>
     <button id="zoomResetBtn" class="secondary">100%</button>
     <button id="zoomInBtn" class="secondary">+ Zoom</button>
+    <button id="musicBtn" class="secondary">🔇 Play Music</button>
   </div>
 
   <script>
@@ -138,6 +144,57 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+    // --- Background Music Handling ---
+    const bgMusic = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+    bgMusic.volume = 0.4; // 40% volume so it's pleasant background audio
+    let userPaused = false;
+
+    function updateMusicButton() {
+      if (!bgMusic.paused) {
+        musicBtn.textContent = '🔊 Music On';
+        musicBtn.classList.remove('secondary');
+        musicBtn.classList.add('music-on');
+      } else {
+        musicBtn.textContent = '🔇 Play Music';
+        musicBtn.classList.remove('music-on');
+        musicBtn.classList.add('secondary');
+      }
+    }
+
+    function tryPlayMusic() {
+      if (userPaused) return;
+      bgMusic.play().then(() => {
+        updateMusicButton();
+      }).catch(() => {
+        // Browser blocked autoplay until user interacts
+        updateMusicButton();
+      });
+    }
+
+    // Attempt autoplay on load, and unlock on first click/touch anywhere
+    window.addEventListener('load', tryPlayMusic);
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, () => {
+        if (bgMusic.paused && !userPaused) {
+          tryPlayMusic();
+        }
+      }, { once: true });
+    });
+
+    musicBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (bgMusic.paused) {
+        userPaused = false;
+        bgMusic.play().then(updateMusicButton);
+      } else {
+        userPaused = true;
+        bgMusic.pause();
+        updateMusicButton();
+      }
+    };
+
+    // --- Zoom Controls ---
     let currentZoom = 1;
     const bookWrapper = document.getElementById('bookWrapper');
 
@@ -159,6 +216,7 @@
       applyZoom();
     };
 
+    // --- Flipbook Initialization ---
     async function initFlipbook() {
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
       const container = document.getElementById('flipbook');
@@ -168,12 +226,10 @@
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        // High-DPI scale (3.0) for crisp text even when zoomed in
         const viewport = page.getViewport({ scale: 3.0 });
 
         if (i === 1) {
           const ratio = viewport.height / viewport.width;
-          // Fit height cleanly within the desktop viewport while maximizing width
           const maxAvailHeight = window.innerHeight * 0.84;
           const maxAvailWidth = Math.min(720, window.innerWidth * 0.47);
           pageWidth = Math.min(maxAvailWidth, Math.round(maxAvailHeight / ratio));
@@ -217,7 +273,10 @@
       };
 
       updateUI();
-      pageFlip.on('flip', updateUI);
+      pageFlip.on('flip', () => {
+        updateUI();
+        tryPlayMusic(); // Also triggers music when flipping a page
+      });
 
       document.getElementById('prevBtn').onclick = () => pageFlip.flipPrev();
       document.getElementById('nextBtn').onclick = () => pageFlip.flipNext();
