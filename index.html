@@ -15,19 +15,21 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow-x: auto;
     }
     .book-wrapper {
       position: relative;
-      width: 90vw;
-      max-width: 1000px;
+      width: 96vw;
+      max-width: 1500px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 20px auto;
+      margin: 10px auto;
+      transition: transform 0.25s ease;
+      transform-origin: top center;
     }
     #flipbook {
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
       z-index: 1;
     }
     .page {
@@ -43,7 +45,7 @@
       object-fit: contain;
     }
 
-    /* High z-index blinking overlay on the left half of the spread */
+    /* Blinking welcome overlay on the left half of the cover spread */
     #coverWelcome {
       position: absolute;
       left: 0;
@@ -54,17 +56,17 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 24px;
+      padding: 32px;
       box-sizing: border-box;
       pointer-events: none;
       z-index: 9999;
     }
     #coverWelcome span {
-      font-size: clamp(24px, 2.8vw, 42px);
+      font-size: clamp(26px, 3vw, 46px);
       font-weight: 800;
       line-height: 1.35;
       color: #60a5fa;
-      text-shadow: 0 0 20px rgba(96, 165, 250, 0.85);
+      text-shadow: 0 0 22px rgba(96, 165, 250, 0.9);
       animation: blinkPulse 1.2s ease-in-out infinite;
     }
     @keyframes blinkPulse {
@@ -79,32 +81,43 @@
     }
 
     .controls {
+      position: sticky;
+      bottom: 12px;
+      background: rgba(30, 30, 36, 0.9);
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
-      gap: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
       align-items: center;
-      margin-bottom: 20px;
-      z-index: 10;
+      justify-content: center;
+      margin-bottom: 14px;
+      z-index: 10000;
     }
     button {
       background: #3b82f6;
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 600;
     }
     button:hover { background: #2563eb; }
-    #status { font-size: 14px; color: #cbd5e1; }
+    button.secondary { background: #475569; }
+    button.secondary:hover { background: #334155; }
+    #status { font-size: 15px; color: #cbd5e1; margin-top: 20px; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
 </head>
 <body>
 
-  <div id="status">Loading brochure...</div>
+  <div id="status">Loading high-resolution brochure...</div>
 
-  <div class="book-wrapper">
+  <div class="book-wrapper" id="bookWrapper">
     <div id="coverWelcome">
       <span>Welcome to ImpactSoft company brochure, click the right side page to flip the brochure 👉</span>
     </div>
@@ -115,6 +128,9 @@
     <button id="prevBtn">← Previous</button>
     <span id="pageInfo">Page 1</span>
     <button id="nextBtn">Next →</button>
+    <button id="zoomOutBtn" class="secondary">− Zoom</button>
+    <button id="zoomResetBtn" class="secondary">100%</button>
+    <button id="zoomInBtn" class="secondary">+ Zoom</button>
   </div>
 
   <script>
@@ -122,20 +138,45 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+    let currentZoom = 1;
+    const bookWrapper = document.getElementById('bookWrapper');
+
+    function applyZoom() {
+      bookWrapper.style.transform = `scale(${currentZoom})`;
+      document.getElementById('zoomResetBtn').textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+
+    document.getElementById('zoomInBtn').onclick = () => {
+      currentZoom = Math.min(1.8, currentZoom + 0.2);
+      applyZoom();
+    };
+    document.getElementById('zoomOutBtn').onclick = () => {
+      currentZoom = Math.max(0.8, currentZoom - 0.2);
+      applyZoom();
+    };
+    document.getElementById('zoomResetBtn').onclick = () => {
+      currentZoom = 1;
+      applyZoom();
+    };
+
     async function initFlipbook() {
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
       const container = document.getElementById('flipbook');
       const welcomeOverlay = document.getElementById('coverWelcome');
-      let pageWidth = 450;
-      let pageHeight = 600;
+      let pageWidth = 650;
+      let pageHeight = 850;
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 1.8 });
+        // High-DPI scale (3.0) for crisp text even when zoomed in
+        const viewport = page.getViewport({ scale: 3.0 });
 
         if (i === 1) {
           const ratio = viewport.height / viewport.width;
-          pageWidth = Math.min(480, window.innerWidth * 0.42);
+          // Fit height cleanly within the desktop viewport while maximizing width
+          const maxAvailHeight = window.innerHeight * 0.84;
+          const maxAvailWidth = Math.min(720, window.innerWidth * 0.47);
+          pageWidth = Math.min(maxAvailWidth, Math.round(maxAvailHeight / ratio));
           pageHeight = Math.round(pageWidth * ratio);
         }
 
@@ -157,10 +198,10 @@
         width: pageWidth,
         height: pageHeight,
         size: 'stretch',
-        minWidth: 300,
-        maxWidth: 600,
-        minHeight: 400,
-        maxHeight: 850,
+        minWidth: 320,
+        maxWidth: 850,
+        minHeight: 420,
+        maxHeight: 1150,
         showCover: true,
         usePortrait: window.innerWidth < 768
       });
