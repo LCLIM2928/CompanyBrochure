@@ -19,6 +19,8 @@
     }
     .book-wrapper {
       position: relative;
+      width: 90vw;
+      max-width: 1000px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -26,6 +28,7 @@
     }
     #flipbook {
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      z-index: 1;
     }
     .page {
       background: #fff;
@@ -40,36 +43,35 @@
       object-fit: contain;
     }
 
-    /* Blinking welcome message positioned in the empty left half of the cover spread */
+    /* High z-index blinking overlay on the left half of the spread */
     #coverWelcome {
       position: absolute;
       left: 0;
       top: 0;
       width: 50%;
       height: 100%;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       padding: 24px;
       box-sizing: border-box;
       pointer-events: none;
-      z-index: 10;
+      z-index: 9999;
     }
     #coverWelcome span {
-      font-size: clamp(22px, 2.6vw, 38px);
+      font-size: clamp(24px, 2.8vw, 42px);
       font-weight: 800;
       line-height: 1.35;
       color: #60a5fa;
-      text-shadow: 0 0 18px rgba(96, 165, 250, 0.65);
-      animation: blinkPulse 1.3s ease-in-out infinite;
+      text-shadow: 0 0 20px rgba(96, 165, 250, 0.85);
+      animation: blinkPulse 1.2s ease-in-out infinite;
     }
     @keyframes blinkPulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.2; transform: scale(0.98); }
+      50% { opacity: 0.15; transform: scale(0.97); }
     }
 
-    /* Hide the left-side message on narrow mobile screens where single-page portrait mode is active */
     @media (max-width: 767px) {
       #coverWelcome {
         display: none !important;
@@ -81,6 +83,7 @@
       gap: 12px;
       align-items: center;
       margin-bottom: 20px;
+      z-index: 10;
     }
     button {
       background: #3b82f6;
@@ -169,17 +172,11 @@
         document.getElementById('pageInfo').textContent =
           `Page ${currentIndex + 1} of ${pdf.numPages}`;
 
-        // Show blinking welcome text only when viewing the front cover (index 0) on desktop
-        if (currentIndex === 0 && window.innerWidth >= 768) {
-          welcomeOverlay.style.display = 'flex';
-        } else {
-          welcomeOverlay.style.display = 'none';
-        }
+        welcomeOverlay.style.display = (currentIndex === 0) ? 'flex' : 'none';
       };
 
       updateUI();
       pageFlip.on('flip', updateUI);
-      window.addEventListener('resize', updateUI);
 
       document.getElementById('prevBtn').onclick = () => pageFlip.flipPrev();
       document.getElementById('nextBtn').onclick = () => pageFlip.flipNext();
