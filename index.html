@@ -117,8 +117,8 @@
 </head>
 <body>
 
-  <!-- Background Audio Element -->
-  <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
+  <!-- Background Audio Element with autoplay enabled -->
+  <audio id="bgMusic" src="music.mp3" autoplay loop preload="auto"></audio>
 
   <div id="status">Loading high-resolution brochure...</div>
 
@@ -136,7 +136,7 @@
     <button id="zoomOutBtn" class="secondary">− Zoom</button>
     <button id="zoomResetBtn" class="secondary">100%</button>
     <button id="zoomInBtn" class="secondary">+ Zoom</button>
-    <button id="musicBtn" class="secondary">🔇 Play Music</button>
+    <button id="musicBtn" class="music-on">⏸ Stop Music</button>
   </div>
 
   <script>
@@ -144,53 +144,59 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // --- Background Music Handling ---
+    // --- Autoplay Music + User Stop/Resume Control ---
     const bgMusic = document.getElementById('bgMusic');
     const musicBtn = document.getElementById('musicBtn');
-    bgMusic.volume = 0.4; // 40% volume so it's pleasant background audio
-    let userPaused = false;
+    bgMusic.volume = 0.4;
+    let userStoppedMusic = false;
 
-    function updateMusicButton() {
+    function syncMusicButton() {
       if (!bgMusic.paused) {
-        musicBtn.textContent = '🔊 Music On';
+        musicBtn.textContent = '⏸ Stop Music';
         musicBtn.classList.remove('secondary');
         musicBtn.classList.add('music-on');
       } else {
-        musicBtn.textContent = '🔇 Play Music';
+        musicBtn.textContent = '🎵 Play Music';
         musicBtn.classList.remove('music-on');
         musicBtn.classList.add('secondary');
       }
     }
 
-    function tryPlayMusic() {
-      if (userPaused) return;
+    function attemptAutoplay() {
+      if (userStoppedMusic) return;
       bgMusic.play().then(() => {
-        updateMusicButton();
+        syncMusicButton();
       }).catch(() => {
-        // Browser blocked autoplay until user interacts
-        updateMusicButton();
+        // Browser blocked immediate unmuted autoplay; show Play button until first interaction
+        syncMusicButton();
       });
     }
 
-    // Attempt autoplay on load, and unlock on first click/touch anywhere
-    window.addEventListener('load', tryPlayMusic);
-    ['click', 'touchstart', 'keydown'].forEach(evt => {
+    // 1. Try playing immediately as soon as the page loads
+    window.addEventListener('DOMContentLoaded', attemptAutoplay);
+    window.addEventListener('load', attemptAutoplay);
+
+    // 2. If the browser blocked autoplay on load, start automatically on first click/touch/flip
+    ['pointerdown', 'click', 'touchstart', 'keydown'].forEach(evt => {
       document.addEventListener(evt, () => {
-        if (bgMusic.paused && !userPaused) {
-          tryPlayMusic();
+        if (bgMusic.paused && !userStoppedMusic) {
+          attemptAutoplay();
         }
       }, { once: true });
     });
 
+    // 3. Button lets the user stop or restart the music anytime
     musicBtn.onclick = (e) => {
       e.stopPropagation();
-      if (bgMusic.paused) {
-        userPaused = false;
-        bgMusic.play().then(updateMusicButton);
-      } else {
-        userPaused = true;
+      if (!bgMusic.paused) {
+        userStoppedMusic = true;
         bgMusic.pause();
-        updateMusicButton();
+        syncMusicButton();
+      } else {
+        userStoppedMusic = false;
+        bgMusic.play().then(syncMusicButton).catch(err => {
+          alert('Unable to play music.mp3: ' + err.message);
+        });
       }
     };
 
@@ -275,7 +281,7 @@
       updateUI();
       pageFlip.on('flip', () => {
         updateUI();
-        tryPlayMusic(); // Also triggers music when flipping a page
+        attemptAutoplay();
       });
 
       document.getElementById('prevBtn').onclick = () => pageFlip.flipPrev();
