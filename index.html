@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brochure Flipbook</title>
+  <title>ImpactSoft Company Brochure</title>
   <style>
     body {
       margin: 0;
       background: #1e1e24;
       color: #fff;
-      font-family: system-ui, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,9 +17,15 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
+    .book-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+    }
     #flipbook {
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      margin: 20px auto;
     }
     .page {
       background: #fff;
@@ -33,6 +39,43 @@
       height: 100%;
       object-fit: contain;
     }
+
+    /* Blinking welcome message positioned in the empty left half of the cover spread */
+    #coverWelcome {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #coverWelcome span {
+      font-size: clamp(22px, 2.6vw, 38px);
+      font-weight: 800;
+      line-height: 1.35;
+      color: #60a5fa;
+      text-shadow: 0 0 18px rgba(96, 165, 250, 0.65);
+      animation: blinkPulse 1.3s ease-in-out infinite;
+    }
+    @keyframes blinkPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.2; transform: scale(0.98); }
+    }
+
+    /* Hide the left-side message on narrow mobile screens where single-page portrait mode is active */
+    @media (max-width: 767px) {
+      #coverWelcome {
+        display: none !important;
+      }
+    }
+
     .controls {
       display: flex;
       gap: 12px;
@@ -51,14 +94,19 @@
     button:hover { background: #2563eb; }
     #status { font-size: 14px; color: #cbd5e1; }
   </style>
-  <!-- Load PDF.js and StPageFlip via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
 </head>
 <body>
 
   <div id="status">Loading brochure...</div>
-  <div id="flipbook"></div>
+
+  <div class="book-wrapper">
+    <div id="coverWelcome">
+      <span>Welcome to ImpactSoft company brochure, click the right side page to flip the brochure 👉</span>
+    </div>
+    <div id="flipbook"></div>
+  </div>
 
   <div class="controls">
     <button id="prevBtn">← Previous</button>
@@ -67,19 +115,20 @@
   </div>
 
   <script>
-    const pdfUrl = 'brochure.pdf'; // Must match your uploaded PDF filename
+    const pdfUrl = 'brochure.pdf';
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     async function initFlipbook() {
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
       const container = document.getElementById('flipbook');
+      const welcomeOverlay = document.getElementById('coverWelcome');
       let pageWidth = 450;
       let pageHeight = 600;
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 1.8 }); // High-res render
+        const viewport = page.getViewport({ scale: 1.8 });
 
         if (i === 1) {
           const ratio = viewport.height / viewport.width;
@@ -115,12 +164,22 @@
 
       pageFlip.loadFromHTML(document.querySelectorAll('.page'));
 
-      const updateInfo = () => {
+      const updateUI = () => {
+        const currentIndex = pageFlip.getCurrentPageIndex();
         document.getElementById('pageInfo').textContent =
-          `Page ${pageFlip.getCurrentPageIndex() + 1} of ${pdf.numPages}`;
+          `Page ${currentIndex + 1} of ${pdf.numPages}`;
+
+        // Show blinking welcome text only when viewing the front cover (index 0) on desktop
+        if (currentIndex === 0 && window.innerWidth >= 768) {
+          welcomeOverlay.style.display = 'flex';
+        } else {
+          welcomeOverlay.style.display = 'none';
+        }
       };
-      updateInfo();
-      pageFlip.on('flip', updateInfo);
+
+      updateUI();
+      pageFlip.on('flip', updateUI);
+      window.addEventListener('resize', updateUI);
 
       document.getElementById('prevBtn').onclick = () => pageFlip.flipPrev();
       document.getElementById('nextBtn').onclick = () => pageFlip.flipNext();
