@@ -7,6 +7,7 @@
   <style>
     body {
       margin: 0;
+      padding-top: 56px;
       background: #1e1e24;
       color: #fff;
       font-family: system-ui, -apple-system, sans-serif;
@@ -14,9 +15,55 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      min-height: calc(100vh - 56px);
       overflow-x: auto;
     }
+
+    /* Top Blinking Red-Pink Follow/Contact Button */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(30, 30, 36, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 10001;
+    }
+    .follow-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff1e56, #ff4d8d);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      padding: 9px 24px;
+      border-radius: 999px;
+      box-shadow: 0 0 18px rgba(255, 30, 86, 0.85);
+      animation: pinkBlink 1.1s ease-in-out infinite;
+    }
+    .follow-btn:hover {
+      animation: none;
+      transform: scale(1.05);
+      box-shadow: 0 0 26px rgba(255, 77, 141, 1);
+    }
+    @keyframes pinkBlink {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 30, 86, 0.95);
+      }
+      50% {
+        opacity: 0.45;
+        transform: scale(0.96);
+        box-shadow: 0 0 6px rgba(255, 77, 141, 0.3);
+      }
+    }
+
     .book-wrapper {
       position: relative;
       width: 96vw;
@@ -117,6 +164,13 @@
 </head>
 <body>
 
+  <!-- Top Blinking Follow/Contact Button -->
+  <div class="top-bar">
+    <a class="follow-btn" href="https://lclim2928.github.io/2025nameCard/ImpactSoft_Follow_me.html" target="_blank" rel="noopener noreferrer">
+      Follow/contact Me
+    </a>
+  </div>
+
   <!-- Background Audio Element with autoplay enabled -->
   <audio id="bgMusic" src="music.mp3" autoplay loop preload="auto"></audio>
 
@@ -167,16 +221,13 @@
       bgMusic.play().then(() => {
         syncMusicButton();
       }).catch(() => {
-        // Browser blocked immediate unmuted autoplay; show Play button until first interaction
         syncMusicButton();
       });
     }
 
-    // 1. Try playing immediately as soon as the page loads
     window.addEventListener('DOMContentLoaded', attemptAutoplay);
     window.addEventListener('load', attemptAutoplay);
 
-    // 2. If the browser blocked autoplay on load, start automatically on first click/touch/flip
     ['pointerdown', 'click', 'touchstart', 'keydown'].forEach(evt => {
       document.addEventListener(evt, () => {
         if (bgMusic.paused && !userStoppedMusic) {
@@ -185,7 +236,6 @@
       }, { once: true });
     });
 
-    // 3. Button lets the user stop or restart the music anytime
     musicBtn.onclick = (e) => {
       e.stopPropagation();
       if (!bgMusic.paused) {
@@ -236,7 +286,7 @@
 
         if (i === 1) {
           const ratio = viewport.height / viewport.width;
-          const maxAvailHeight = window.innerHeight * 0.84;
+          const maxAvailHeight = window.innerHeight * 0.80;
           const maxAvailWidth = Math.min(720, window.innerWidth * 0.47);
           pageWidth = Math.min(maxAvailWidth, Math.round(maxAvailHeight / ratio));
           pageHeight = Math.round(pageWidth * ratio);
