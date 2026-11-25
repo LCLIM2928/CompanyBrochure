@@ -442,10 +442,77 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+    // --- Realistic Paper Page-Flip Sound Effect (Web Audio API + optional flip.mp3) ---
+    let audioCtx = null;
+    let customFlipAvailable = false;
+
+    // Optional: check if user uploaded a custom flip.mp3 file
+    fetch('flip.mp3', { method: 'HEAD' })
+      .then(res => { if (res.ok) customFlipAvailable = true; })
+      .catch(() => {});
+
+    function playPageFlipSound() {
+      // If a custom flip.mp3 exists in the repo, play it
+      if (customFlipAvailable) {
+        const sfx = new Audio('flip.mp3');
+        sfx.volume = 0.85;
+        sfx.play().catch(() => {});
+        return;
+      }
+
+      // Otherwise synthesize a crisp, realistic paper page-flip sound
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const duration = 0.34;
+        const sampleRate = audioCtx.sampleRate;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+
+        // Two-part paper swish + soft page settle envelope
+        for (let i = 0; i < bufferSize; i++) {
+          const t = i / bufferSize;
+          const swish = Math.sin(Math.PI * Math.pow(t, 0.65));
+          const settle = t > 0.68 ? Math.sin(Math.PI * ((t - 0.68) / 0.32)) * 0.65 : 0;
+          output[i] = (Math.random() * 2 - 1) * (swish + settle);
+        }
+
+        const whiteNoise = audioCtx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+
+        // Bandpass filter sweeping upward to mimic paper friction & snap
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(750, now);
+        filter.frequency.exponentialRampToValueAtTime(2400, now + 0.16);
+        filter.frequency.exponentialRampToValueAtTime(1100, now + duration);
+        filter.Q.value = 1.6;
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.01, now);
+        gainNode.gain.linearRampToValueAtTime(0.55, now + 0.08);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+        whiteNoise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        whiteNoise.start(now);
+        whiteNoise.stop(now + duration);
+      } catch (e) {
+        // Ignore if blocked before user gesture
+      }
+    }
+
     // --- Autoplay Music + User Stop/Resume Control ---
     const bgMusic = document.getElementById('bgMusic');
     const musicBtn = document.getElementById('musicBtn');
-    bgMusic.volume = 0.4;
+    bgMusic.volume = 0.32;
     let userStoppedMusic = false;
 
     function syncMusicButton() {
@@ -573,7 +640,10 @@
       };
 
       updateUI();
+
+      // Play page-flip sound every time a page turns
       pageFlip.on('flip', () => {
+        playPageFlipSound();
         updateUI();
         attemptAutoplay();
       });
@@ -584,6 +654,7 @@
       // Top "Flip the Brochure" button flips forward, or loops back to cover on the last page
       document.getElementById('topFlipBtn').onclick = () => {
         if (pageFlip.getCurrentPageIndex() >= pdf.numPages - 1) {
+          playPageFlipSound();
           pageFlip.turnToPage(0);
         } else {
           pageFlip.flipNext();
