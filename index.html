@@ -68,7 +68,7 @@
       }
     }
 
-    /* Flip Brochure Button with Animated Book + Hand Icon */
+    /* Flip Brochure Button with Animated Book + Downward-Pointing Hand Icon */
     .flip-hero-btn {
       display: inline-flex;
       align-items: center;
@@ -95,11 +95,11 @@
       align-items: center;
       font-size: 18px;
       line-height: 1;
-      animation: handFlipMotion 1.4s ease-in-out infinite;
+      animation: handPointDown 1.2s ease-in-out infinite;
     }
-    @keyframes handFlipMotion {
-      0%, 100% { transform: translateX(0) rotate(0deg); }
-      50% { transform: translateX(-4px) rotate(-12deg); }
+    @keyframes handPointDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(3px); }
     }
 
     /* Left-Hand Vertical Action Panel */
@@ -368,7 +368,7 @@
       Follow/contact Me
     </a>
     <button id="topFlipBtn" class="flip-hero-btn" type="button">
-      <span class="book-hand-icon">📖👆</span>
+      <span class="book-hand-icon">📖👇</span>
       <span>Flip the Brochure</span>
     </button>
   </div>
