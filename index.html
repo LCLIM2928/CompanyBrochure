@@ -20,7 +20,7 @@
       overflow-x: auto;
     }
 
-    /* Top Stacked Bar: Follow/Contact Button on Top, Flip Brochure Button Directly Beneath */
+    /* Top Stacked Bar: Highest z-index so nothing blocks clicks */
     .top-bar {
       position: fixed;
       top: 0;
@@ -32,10 +32,11 @@
       justify-content: center;
       align-items: center;
       gap: 7px;
-      background: rgba(30, 30, 36, 0.88);
+      background: rgba(30, 30, 36, 0.92);
       backdrop-filter: blur(6px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      z-index: 10001;
+      z-index: 99999;
+      pointer-events: auto;
     }
     .follow-btn {
       display: inline-block;
@@ -84,17 +85,23 @@
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(245, 158, 11, 0.55);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      z-index: 100000;
     }
     .flip-hero-btn:hover {
       transform: scale(1.05);
       background: linear-gradient(135deg, #fbbf24, #f97316);
       box-shadow: 0 6px 20px rgba(245, 158, 11, 0.8);
     }
+    .flip-hero-btn:active {
+      transform: scale(0.97);
+    }
     .book-hand-icon {
       display: inline-flex;
       align-items: center;
       font-size: 18px;
       line-height: 1;
+      pointer-events: none;
       animation: handPointDown 1.2s ease-in-out infinite;
     }
     @keyframes handPointDown {
@@ -119,7 +126,7 @@
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(8px);
-      z-index: 10002;
+      z-index: 99998;
     }
 
     .side-btn {
@@ -139,7 +146,6 @@
       transform: translateX(4px) scale(1.02);
     }
 
-    /* 1. Online Shop with Animated Red Cart Track */
     .shop-btn {
       background: linear-gradient(135deg, #dc2626, #f97316);
       box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
@@ -172,26 +178,22 @@
       100% { transform: translateX(-6px) rotate(0deg); }
     }
 
-    /* 2. Website Button */
     .web-btn {
       background: linear-gradient(135deg, #0284c7, #2563eb);
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
     }
 
-    /* 3. TikTok Button */
     .tiktok-btn {
       background: #0f0f13;
       border: 1px solid #25f4ee;
       box-shadow: -2px 0 8px rgba(37, 244, 238, 0.45), 2px 0 8px rgba(254, 44, 85, 0.45);
     }
 
-    /* 4. Facebook Button */
     .fb-btn {
       background: #1877f2;
       box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35);
     }
 
-    /* 5. WhatsApp Me Blinking Button */
     .wa-btn {
       background: linear-gradient(135deg, #16a34a, #25d366);
       box-shadow: 0 0 16px rgba(37, 211, 102, 0.85);
@@ -210,7 +212,6 @@
       }
     }
 
-    /* 6. Blinking Contact LCLIM(Eden) 012-3706968 Text */
     .contact-blink-text {
       text-align: center;
       font-size: 13.5px;
@@ -223,14 +224,8 @@
       animation: contactTextBlink 1s ease-in-out infinite;
     }
     @keyframes contactTextBlink {
-      0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 0.2;
-        transform: scale(0.97);
-      }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.2; transform: scale(0.97); }
     }
 
     .book-wrapper {
@@ -243,6 +238,7 @@
       margin: 10px auto;
       transition: transform 0.25s ease;
       transform-origin: top center;
+      z-index: 1;
     }
     #flipbook {
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
@@ -261,7 +257,6 @@
       object-fit: contain;
     }
 
-    /* Blinking welcome overlay on the left half of the cover spread */
     #coverWelcome {
       position: absolute;
       left: 0;
@@ -275,7 +270,7 @@
       padding: 32px;
       box-sizing: border-box;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 50;
     }
     #coverWelcome span {
       font-size: clamp(24px, 2.6vw, 42px);
@@ -290,18 +285,13 @@
       50% { opacity: 0.15; transform: scale(0.97); }
     }
 
-    /* Mobile responsive adjustments */
     @media (max-width: 767px) {
       body {
         padding-left: 0;
         padding-bottom: 145px;
       }
-      .book-wrapper {
-        width: 96vw;
-      }
-      #coverWelcome {
-        display: none !important;
-      }
+      .book-wrapper { width: 96vw; }
+      #coverWelcome { display: none !important; }
       .left-panel {
         left: 50%;
         top: auto;
@@ -314,15 +304,8 @@
         padding: 8px;
         gap: 6px;
       }
-      .side-btn {
-        font-size: 12px;
-        padding: 7px 10px;
-      }
-      .contact-blink-text {
-        width: 100%;
-        border-top: none;
-        padding-top: 2px;
-      }
+      .side-btn { font-size: 12px; padding: 7px 10px; }
+      .contact-blink-text { width: 100%; border-top: none; padding-top: 2px; }
     }
 
     .controls {
@@ -338,7 +321,7 @@
       align-items: center;
       justify-content: center;
       margin-bottom: 14px;
-      z-index: 10000;
+      z-index: 99997;
     }
     button {
       background: #3b82f6;
@@ -362,7 +345,7 @@
 </head>
 <body>
 
-  <!-- Top Stacked Buttons: Follow/Contact on Top, Flip Brochure Directly Beneath -->
+  <!-- Top Stacked Buttons -->
   <div class="top-bar">
     <a class="follow-btn" href="https://lclim2928.github.io/2025nameCard/ImpactSoft_Follow_me.html" target="_blank" rel="noopener noreferrer">
       Follow/contact Me
@@ -375,7 +358,6 @@
 
   <!-- Left-Hand Vertical Panel -->
   <div class="left-panel">
-    <!-- Online Shop with Animated Red Cart Track -->
     <a class="side-btn shop-btn" href="https://take.app/impactsoft" target="_blank" rel="noopener noreferrer">
       <span class="cart-track">
         <img src="cartimages.jpeg" alt="Cart" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
@@ -389,33 +371,27 @@
       <span>Online Shop</span>
     </a>
 
-    <!-- Website -->
     <a class="side-btn web-btn" href="https://impactsoftsolutions.com/" target="_blank" rel="noopener noreferrer">
       🌐 Website
     </a>
 
-    <!-- TikTok -->
     <a class="side-btn tiktok-btn" href="https://www.tiktok.com/@impactsoft" target="_blank" rel="noopener noreferrer">
       🎵 TikTok
     </a>
 
-    <!-- Facebook -->
     <a class="side-btn fb-btn" href="https://www.facebook.com/lclim.ImpactSoft" target="_blank" rel="noopener noreferrer">
       📘 Facebook
     </a>
 
-    <!-- WhatsApp Me (Blinking) -->
     <a class="side-btn wa-btn" href="https://wa.me/60123706968" target="_blank" rel="noopener noreferrer">
       💬 WhatsApp Me
     </a>
 
-    <!-- Blinking Contact Text -->
     <div class="contact-blink-text">
       Contact LCLIM(Eden) 012-3706968
     </div>
   </div>
 
-  <!-- Background Audio Element with autoplay enabled -->
   <audio id="bgMusic" src="music.mp3" autoplay loop preload="auto"></audio>
 
   <div id="status">Loading high-resolution brochure...</div>
@@ -442,17 +418,18 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // --- Realistic Paper Page-Flip Sound Effect (Web Audio API + optional flip.mp3) ---
+    let pageFlipInstance = null;
+    let totalPdfPages = 0;
+
+    // --- Realistic Paper Page-Flip Sound Effect ---
     let audioCtx = null;
     let customFlipAvailable = false;
 
-    // Optional: check if user uploaded a custom flip.mp3 file
     fetch('flip.mp3', { method: 'HEAD' })
       .then(res => { if (res.ok) customFlipAvailable = true; })
       .catch(() => {});
 
     function playPageFlipSound() {
-      // If a custom flip.mp3 exists in the repo, play it
       if (customFlipAvailable) {
         const sfx = new Audio('flip.mp3');
         sfx.volume = 0.85;
@@ -460,7 +437,6 @@
         return;
       }
 
-      // Otherwise synthesize a crisp, realistic paper page-flip sound
       try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return;
@@ -474,7 +450,6 @@
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
         const output = noiseBuffer.getChannelData(0);
 
-        // Two-part paper swish + soft page settle envelope
         for (let i = 0; i < bufferSize; i++) {
           const t = i / bufferSize;
           const swish = Math.sin(Math.PI * Math.pow(t, 0.65));
@@ -485,7 +460,6 @@
         const whiteNoise = audioCtx.createBufferSource();
         whiteNoise.buffer = noiseBuffer;
 
-        // Bandpass filter sweeping upward to mimic paper friction & snap
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'bandpass';
         filter.frequency.setValueAtTime(750, now);
@@ -504,9 +478,7 @@
 
         whiteNoise.start(now);
         whiteNoise.stop(now + duration);
-      } catch (e) {
-        // Ignore if blocked before user gesture
-      }
+      } catch (e) {}
     }
 
     // --- Autoplay Music + User Stop/Resume Control ---
@@ -529,11 +501,7 @@
 
     function attemptAutoplay() {
       if (userStoppedMusic) return;
-      bgMusic.play().then(() => {
-        syncMusicButton();
-      }).catch(() => {
-        syncMusicButton();
-      });
+      bgMusic.play().then(syncMusicButton).catch(syncMusicButton);
     }
 
     window.addEventListener('DOMContentLoaded', attemptAutoplay);
@@ -583,9 +551,41 @@
       applyZoom();
     };
 
+    // --- Shared Flip Helper (Used by Top Button & Next Button) ---
+    function triggerBrochureFlip() {
+      if (!pageFlipInstance) return;
+      const currentIdx = pageFlipInstance.getCurrentPageIndex();
+      if (currentIdx >= totalPdfPages - 1) {
+        playPageFlipSound();
+        pageFlipInstance.turnToPage(0);
+      } else {
+        // Explicit target index avoids St.PageFlip stalling on cover page 0
+        const nextIdx = currentIdx === 0 ? 1 : Math.min(totalPdfPages - 1, currentIdx + 1);
+        pageFlipInstance.flip(nextIdx);
+      }
+      attemptAutoplay();
+    }
+
+    document.getElementById('topFlipBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      triggerBrochureFlip();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      triggerBrochureFlip();
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (pageFlipInstance) pageFlipInstance.flipPrev();
+    });
+
     // --- Flipbook Initialization ---
     async function initFlipbook() {
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+      totalPdfPages = pdf.numPages;
       const container = document.getElementById('flipbook');
       const welcomeOverlay = document.getElementById('coverWelcome');
       let pageWidth = 650;
@@ -617,7 +617,7 @@
 
       document.getElementById('status').style.display = 'none';
 
-      const pageFlip = new St.PageFlip(container, {
+      pageFlipInstance = new St.PageFlip(container, {
         width: pageWidth,
         height: pageHeight,
         size: 'stretch',
@@ -629,38 +629,23 @@
         usePortrait: window.innerWidth < 768
       });
 
-      pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+      pageFlipInstance.loadFromHTML(document.querySelectorAll('.page'));
 
       const updateUI = () => {
-        const currentIndex = pageFlip.getCurrentPageIndex();
+        const currentIndex = pageFlipInstance.getCurrentPageIndex();
         document.getElementById('pageInfo').textContent =
-          `Page ${currentIndex + 1} of ${pdf.numPages}`;
+          `Page ${currentIndex + 1} of ${totalPdfPages}`;
 
         welcomeOverlay.style.display = (currentIndex === 0) ? 'flex' : 'none';
       };
 
       updateUI();
 
-      // Play page-flip sound every time a page turns
-      pageFlip.on('flip', () => {
+      pageFlipInstance.on('flip', () => {
         playPageFlipSound();
         updateUI();
         attemptAutoplay();
       });
-
-      document.getElementById('prevBtn').onclick = () => pageFlip.flipPrev();
-      document.getElementById('nextBtn').onclick = () => pageFlip.flipNext();
-
-      // Top "Flip the Brochure" button flips forward, or loops back to cover on the last page
-      document.getElementById('topFlipBtn').onclick = () => {
-        if (pageFlip.getCurrentPageIndex() >= pdf.numPages - 1) {
-          playPageFlipSound();
-          pageFlip.turnToPage(0);
-        } else {
-          pageFlip.flipNext();
-        }
-        attemptAutoplay();
-      };
     }
 
     initFlipbook().catch(err => {
