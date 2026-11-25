@@ -8,6 +8,7 @@
     body {
       margin: 0;
       padding-top: 56px;
+      padding-left: 195px;
       background: #1e1e24;
       color: #fff;
       font-family: system-ui, -apple-system, sans-serif;
@@ -19,7 +20,7 @@
       overflow-x: auto;
     }
 
-    /* Top Blinking Red-Pink Follow/Contact Button */
+    /* Top Blinking Red-Pink Follow/Contact Button (Untouched) */
     .top-bar {
       position: fixed;
       top: 0;
@@ -64,10 +65,141 @@
       }
     }
 
+    /* Left-Hand Vertical Action Panel */
+    .left-panel {
+      position: fixed;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 170px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      padding: 12px 10px;
+      background: rgba(24, 24, 30, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      z-index: 10002;
+    }
+
+    .side-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      white-space: nowrap;
+    }
+    .side-btn:hover {
+      transform: translateX(4px) scale(1.02);
+    }
+
+    /* 1. Online Shop with Animated Red Cart Track */
+    .shop-btn {
+      background: linear-gradient(135deg, #dc2626, #f97316);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
+      padding-left: 9px;
+    }
+    .cart-track {
+      display: inline-flex;
+      align-items: center;
+      width: 34px;
+      height: 24px;
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 2px 4px;
+      overflow: hidden;
+      position: relative;
+      border-bottom: 2px dashed #94a3b8;
+      flex-shrink: 0;
+    }
+    .cart-track img,
+    .cart-track svg {
+      height: 20px;
+      width: auto;
+      display: block;
+      animation: cartRoll 1.8s ease-in-out infinite;
+    }
+    @keyframes cartRoll {
+      0%   { transform: translateX(-6px) rotate(0deg); }
+      45%  { transform: translateX(8px) rotate(-4deg); }
+      75%  { transform: translateX(10px) rotate(0deg); }
+      100% { transform: translateX(-6px) rotate(0deg); }
+    }
+
+    /* 2. Website Button */
+    .web-btn {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    /* 3. TikTok Button */
+    .tiktok-btn {
+      background: #0f0f13;
+      border: 1px solid #25f4ee;
+      box-shadow: -2px 0 8px rgba(37, 244, 238, 0.45), 2px 0 8px rgba(254, 44, 85, 0.45);
+    }
+
+    /* 4. Facebook Button */
+    .fb-btn {
+      background: #1877f2;
+      box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35);
+    }
+
+    /* 5. WhatsApp Me Blinking Button */
+    .wa-btn {
+      background: linear-gradient(135deg, #16a34a, #25d366);
+      box-shadow: 0 0 16px rgba(37, 211, 102, 0.85);
+      animation: waBlink 1.15s ease-in-out infinite;
+    }
+    @keyframes waBlink {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 18px rgba(37, 211, 102, 0.95);
+      }
+      50% {
+        opacity: 0.45;
+        transform: scale(0.96);
+        box-shadow: 0 0 6px rgba(37, 211, 102, 0.3);
+      }
+    }
+
+    /* 6. Blinking Contact LCLIM(Eden) 012-3706968 Text */
+    .contact-blink-text {
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 800;
+      line-height: 1.4;
+      color: #fde047;
+      text-shadow: 0 0 12px rgba(250, 204, 21, 0.95);
+      padding: 6px 4px 2px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      animation: contactTextBlink 1s ease-in-out infinite;
+    }
+    @keyframes contactTextBlink {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.2;
+        transform: scale(0.97);
+      }
+    }
+
     .book-wrapper {
       position: relative;
-      width: 96vw;
-      max-width: 1500px;
+      width: calc(96vw - 195px);
+      max-width: 1400px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -109,7 +241,7 @@
       z-index: 9999;
     }
     #coverWelcome span {
-      font-size: clamp(26px, 3vw, 46px);
+      font-size: clamp(24px, 2.6vw, 42px);
       font-weight: 800;
       line-height: 1.35;
       color: #60a5fa;
@@ -121,9 +253,38 @@
       50% { opacity: 0.15; transform: scale(0.97); }
     }
 
+    /* Mobile responsive adjustments */
     @media (max-width: 767px) {
+      body {
+        padding-left: 0;
+        padding-bottom: 145px;
+      }
+      .book-wrapper {
+        width: 96vw;
+      }
       #coverWelcome {
         display: none !important;
+      }
+      .left-panel {
+        left: 50%;
+        top: auto;
+        bottom: 62px;
+        transform: translateX(-50%);
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 94vw;
+        padding: 8px;
+        gap: 6px;
+      }
+      .side-btn {
+        font-size: 12px;
+        padding: 7px 10px;
+      }
+      .contact-blink-text {
+        width: 100%;
+        border-top: none;
+        padding-top: 2px;
       }
     }
 
@@ -167,8 +328,50 @@
   <!-- Top Blinking Follow/Contact Button -->
   <div class="top-bar">
     <a class="follow-btn" href="https://lclim2928.github.io/2025nameCard/ImpactSoft_Follow_me.html" target="_blank" rel="noopener noreferrer">
-      Click here-Follow/contact Me (Eden LCLIM-0123706968)
+      Follow/contact Me
     </a>
+  </div>
+
+  <!-- Left-Hand Vertical Panel -->
+  <div class="left-panel">
+    <!-- Online Shop with Animated Red Cart Track -->
+    <a class="side-btn shop-btn" href="https://take.app/impactsoft" target="_blank" rel="noopener noreferrer">
+      <span class="cart-track">
+        <img src="cartimages.jpeg" alt="Cart" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <svg style="display:none;" viewBox="0 0 64 56" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 8h10l6 28h30l6-20H18" fill="none" stroke="#dc2626" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polygon points="18,16 56,16 50,36 20,36" fill="#dc2626"/>
+          <circle cx="24" cy="46" r="5" fill="#1e293b"/>
+          <circle cx="46" cy="46" r="5" fill="#1e293b"/>
+        </svg>
+      </span>
+      <span>Online Shop</span>
+    </a>
+
+    <!-- Website -->
+    <a class="side-btn web-btn" href="https://impactsoftsolutions.com/" target="_blank" rel="noopener noreferrer">
+      🌐 Website
+    </a>
+
+    <!-- TikTok -->
+    <a class="side-btn tiktok-btn" href="https://www.tiktok.com/@impactsoft" target="_blank" rel="noopener noreferrer">
+      🎵 TikTok
+    </a>
+
+    <!-- Facebook -->
+    <a class="side-btn fb-btn" href="https://www.facebook.com/lclim.ImpactSoft" target="_blank" rel="noopener noreferrer">
+      📘 Facebook
+    </a>
+
+    <!-- WhatsApp Me (Blinking) -->
+    <a class="side-btn wa-btn" href="https://wa.me/60123706968" target="_blank" rel="noopener noreferrer">
+      💬 WhatsApp Me
+    </a>
+
+    <!-- Blinking Contact Text -->
+    <div class="contact-blink-text">
+      Contact LCLIM(Eden) 012-3706968
+    </div>
   </div>
 
   <!-- Background Audio Element with autoplay enabled -->
@@ -286,9 +489,9 @@
 
         if (i === 1) {
           const ratio = viewport.height / viewport.width;
+          const availW = window.innerWidth >= 768 ? (window.innerWidth - 215) * 0.48 : window.innerWidth * 0.90;
           const maxAvailHeight = window.innerHeight * 0.80;
-          const maxAvailWidth = Math.min(720, window.innerWidth * 0.47);
-          pageWidth = Math.min(maxAvailWidth, Math.round(maxAvailHeight / ratio));
+          pageWidth = Math.min(700, Math.round(availW), Math.round(maxAvailHeight / ratio));
           pageHeight = Math.round(pageWidth * ratio);
         }
 
