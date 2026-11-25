@@ -17,10 +17,10 @@
       align-items: center;
       justify-content: center;
       min-height: calc(100vh - 106px);
-      overflow-x: auto;
+      overflow-x: hidden;
     }
 
-    /* Top Stacked Bar: Follow/Contact Button on Top, Flip Brochure Button Directly Beneath */
+    /* Top Stacked Bar */
     .top-bar {
       position: fixed;
       top: 0;
@@ -69,7 +69,7 @@
       }
     }
 
-    /* Flip Brochure Button with Animated Book + Downward-Pointing Hand Icon */
+    /* Flip Brochure Button */
     .flip-hero-btn {
       display: inline-flex;
       align-items: center;
@@ -146,7 +146,6 @@
       transform: translateX(4px) scale(1.02);
     }
 
-    /* 1. Online Shop with Animated Red Cart Track */
     .shop-btn {
       background: linear-gradient(135deg, #dc2626, #f97316);
       box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
@@ -179,26 +178,19 @@
       100% { transform: translateX(-6px) rotate(0deg); }
     }
 
-    /* 2. Website Button */
     .web-btn {
       background: linear-gradient(135deg, #0284c7, #2563eb);
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
     }
-
-    /* 3. TikTok Button */
     .tiktok-btn {
       background: #0f0f13;
       border: 1px solid #25f4ee;
       box-shadow: -2px 0 8px rgba(37, 244, 238, 0.45), 2px 0 8px rgba(254, 44, 85, 0.45);
     }
-
-    /* 4. Facebook Button */
     .fb-btn {
       background: #1877f2;
       box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35);
     }
-
-    /* 5. WhatsApp Me Blinking Button */
     .wa-btn {
       background: linear-gradient(135deg, #16a34a, #25d366);
       box-shadow: 0 0 16px rgba(37, 211, 102, 0.85);
@@ -217,7 +209,6 @@
       }
     }
 
-    /* 6. Blinking Contact LCLIM(Eden) 012-3706968 Text */
     .contact-blink-text {
       text-align: center;
       font-size: 13.5px;
@@ -261,9 +252,10 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      display: block;
     }
 
-    /* Blinking welcome overlay on the left half of the cover spread */
+    /* Blinking welcome overlay on the left half of the cover spread (PC only) */
     #coverWelcome {
       position: absolute;
       left: 0;
@@ -324,21 +316,21 @@
     button.music-on:hover { background: #059669; }
     #status { font-size: 15px; color: #cbd5e1; margin-top: 20px; }
 
-    /* Mobile responsive adjustments: non-overlapping stacked bottom bars */
+    /* Mobile responsive adjustments */
     @media (max-width: 767px) {
       body {
-        padding-top: 96px;
+        padding-top: 94px;
         padding-left: 0;
-        padding-bottom: 195px;
+        padding-bottom: 175px;
+        justify-content: flex-start;
       }
       .book-wrapper {
-        width: 96vw;
-        margin-top: 6px;
+        width: 94vw;
+        margin-top: 8px;
       }
       #coverWelcome {
         display: none !important;
       }
-      /* 1. Page Navigation & Music Controls pinned at very bottom */
       .controls {
         position: fixed;
         bottom: 0;
@@ -357,13 +349,12 @@
         padding: 6px 10px;
         font-size: 12px;
       }
-      /* 2. Social & Shop Panel stacked cleanly ABOVE the controls bar */
       .left-panel {
         position: fixed;
         left: 0;
         right: 0;
         top: auto;
-        bottom: 52px;
+        bottom: 50px;
         transform: none;
         width: 100%;
         border-radius: 14px 14px 0 0;
@@ -392,7 +383,7 @@
 </head>
 <body>
 
-  <!-- Top Stacked Buttons: Follow/Contact on Top, Flip Brochure Directly Beneath -->
+  <!-- Top Stacked Buttons -->
   <div class="top-bar">
     <a class="follow-btn" href="https://lclim2928.github.io/2025nameCard/ImpactSoft_Follow_me.html" target="_blank" rel="noopener noreferrer">
       Follow/contact Me
@@ -403,9 +394,8 @@
     </button>
   </div>
 
-  <!-- Left-Hand Vertical Panel (Docked Above Controls on Mobile) -->
+  <!-- Left-Hand Vertical Panel -->
   <div class="left-panel">
-    <!-- Online Shop with Animated Red Cart Track -->
     <a class="side-btn shop-btn" href="https://take.app/impactsoft" target="_blank" rel="noopener noreferrer">
       <span class="cart-track">
         <img src="cartimages.jpeg" alt="Cart" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
@@ -419,33 +409,27 @@
       <span>Online Shop</span>
     </a>
 
-    <!-- Website -->
     <a class="side-btn web-btn" href="https://impactsoftsolutions.com/" target="_blank" rel="noopener noreferrer">
       🌐 Website
     </a>
 
-    <!-- TikTok -->
     <a class="side-btn tiktok-btn" href="https://www.tiktok.com/@impactsoft" target="_blank" rel="noopener noreferrer">
       🎵 TikTok
     </a>
 
-    <!-- Facebook -->
     <a class="side-btn fb-btn" href="https://www.facebook.com/lclim.ImpactSoft" target="_blank" rel="noopener noreferrer">
       📘 Facebook
     </a>
 
-    <!-- WhatsApp Me (Blinking) -->
     <a class="side-btn wa-btn" href="https://wa.me/60123706968" target="_blank" rel="noopener noreferrer">
       💬 WhatsApp Me
     </a>
 
-    <!-- Blinking Contact Text -->
     <div class="contact-blink-text">
       Contact LCLIM(Eden) 012-3706968
     </div>
   </div>
 
-  <!-- Background Audio Element with autoplay enabled -->
   <audio id="bgMusic" src="music.mp3" autoplay loop preload="auto"></audio>
 
   <div id="status">Loading high-resolution brochure...</div>
@@ -474,8 +458,9 @@
 
     let pageFlipInstance = null;
     let totalPdfPages = 0;
+    const isMobile = window.innerWidth < 768;
 
-    // --- Realistic Paper Page-Flip Sound Effect (Custom flip.mp3 or Web Audio API fallback) ---
+    // --- Realistic Paper Page-Flip Sound Effect ---
     let audioCtx = null;
     let customFlipAvailable = false;
 
@@ -605,16 +590,24 @@
       applyZoom();
     };
 
-    // --- Shared Flip Helper (Used by Top Button & Next Button) ---
+    // --- Shared Flip Helper (Works Across All Pages on Both PC & Mobile) ---
     function triggerBrochureFlip() {
       if (!pageFlipInstance) return;
       const currentIdx = pageFlipInstance.getCurrentPageIndex();
-      if (currentIdx >= totalPdfPages - 1) {
+
+      // Calculate how many pages are visible at once (1 on mobile, 2 on PC inner spreads)
+      const step = (!isMobile && currentIdx > 0) ? 2 : 1;
+
+      if (currentIdx + step >= totalPdfPages) {
+        // Reached the end of the brochure: loop smoothly back to Page 1
         playPageFlipSound();
         pageFlipInstance.turnToPage(0);
+      } else if (!isMobile && currentIdx === 0) {
+        // Explicit target index 1 opens the PC cover reliably
+        pageFlipInstance.flip(1);
       } else {
-        const nextIdx = currentIdx === 0 ? 1 : Math.min(totalPdfPages - 1, currentIdx + 1);
-        pageFlipInstance.flip(nextIdx);
+        // Advances to the next single page (mobile) or next 2-page spread (PC)
+        pageFlipInstance.flipNext();
       }
       attemptAutoplay();
     }
@@ -641,19 +634,29 @@
       totalPdfPages = pdf.numPages;
       const container = document.getElementById('flipbook');
       const welcomeOverlay = document.getElementById('coverWelcome');
+
+      // Use 2.0 scale on mobile to keep canvas fast and crisp, 3.0 on desktop
+      const renderScale = isMobile ? 2.0 : 3.0;
       let pageWidth = 650;
       let pageHeight = 850;
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 3.0 });
+        const viewport = page.getViewport({ scale: renderScale });
 
         if (i === 1) {
           const ratio = viewport.height / viewport.width;
-          const availW = window.innerWidth >= 768 ? (window.innerWidth - 215) * 0.48 : window.innerWidth * 0.90;
-          const maxAvailHeight = window.innerHeight * 0.76;
-          pageWidth = Math.min(700, Math.round(availW), Math.round(maxAvailHeight / ratio));
-          pageHeight = Math.round(pageWidth * ratio);
+          if (isMobile) {
+            const availW = window.innerWidth * 0.92;
+            const maxAvailHeight = window.innerHeight - 285;
+            pageWidth = Math.min(480, Math.round(availW), Math.round(maxAvailHeight / ratio));
+            pageHeight = Math.round(pageWidth * ratio);
+          } else {
+            const availW = (window.innerWidth - 215) * 0.48;
+            const maxAvailHeight = window.innerHeight * 0.76;
+            pageWidth = Math.min(700, Math.round(availW), Math.round(maxAvailHeight / ratio));
+            pageHeight = Math.round(pageWidth * ratio);
+          }
         }
 
         const pageDiv = document.createElement('div');
@@ -670,16 +673,21 @@
 
       document.getElementById('status').style.display = 'none';
 
+      // Set explicit container dimensions so mobile never stacks pages vertically
+      container.style.width = (isMobile ? pageWidth : pageWidth * 2) + 'px';
+      container.style.height = pageHeight + 'px';
+
       pageFlipInstance = new St.PageFlip(container, {
         width: pageWidth,
         height: pageHeight,
-        size: 'stretch',
-        minWidth: 320,
+        size: isMobile ? 'fixed' : 'stretch',
+        minWidth: 260,
         maxWidth: 850,
-        minHeight: 420,
+        minHeight: 340,
         maxHeight: 1150,
-        showCover: true,
-        usePortrait: window.innerWidth < 768
+        showCover: !isMobile,
+        usePortrait: isMobile,
+        mobileScrollSupport: false
       });
 
       pageFlipInstance.loadFromHTML(document.querySelectorAll('.page'));
@@ -689,7 +697,7 @@
         document.getElementById('pageInfo').textContent =
           `Page ${currentIndex + 1} of ${totalPdfPages}`;
 
-        welcomeOverlay.style.display = (currentIndex === 0) ? 'flex' : 'none';
+        welcomeOverlay.style.display = (!isMobile && currentIndex === 0) ? 'flex' : 'none';
       };
 
       updateUI();
